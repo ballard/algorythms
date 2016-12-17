@@ -22,44 +22,36 @@ class Node {
      *   - If Node matches the search, its matched property must be set to true, otherwise false
      *   - If at least one descendant of the Node matches the search, Node's expanded property must be set to true, otherwise false
      */
-    func search(search: String) -> Node? {
-        
-        let name = self.name
-        var matched = false
-        var expanded = false
-        var children = [Node]()
-        
-        if name.localizedCaseInsensitiveContains(search) {
-            matched = true
-            children = self.children
-        }
-        
-        for selfChild in self.children {
-            if let child = selfChild.search(search: search) {
-                for (index, value) in children.enumerated() {
-                    if value.name == child.name {
-                        children.remove(at: index)
-                    }
+    
+    func search(_ s: String) -> Node? {
+        let node = Node()
+        node.name = self.name
+        if self.name.localizedCaseInsensitiveContains(s) {
+            let traversedChildren = self.children.map{ $0.search(s) ?? $0 }
+            node.matched = true
+            
+            //let exp = traversedChildren.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
+            
+            node.expanded = traversedChildren.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
+            
+            /*for children in traversedChildren {
+                if children.matched || children.expanded {
+                    node.expanded = true
+                    break
                 }
-
-                children.append(child)
-                
-                if children.count != 0 {
-                    expanded = true
-                }
+            }*/
+            
+            node.children = traversedChildren
+            return node
+        } else {
+            let traversedChildren = self.children.map{ $0.search(s) }.filter{ $0 != nil }
+            if traversedChildren.count == 0 {
+                return nil
             }
-        }
-        
-        if matched || expanded {
-            let node = Node()
-            node.name = name
-            node.matched = matched
-            node.expanded = expanded
-            node.children = children
+            node.expanded = true
+            node.children = traversedChildren as! [Node]
             return node
         }
-        
-        return nil
     }
 }
 
@@ -137,7 +129,7 @@ dzeta.children.append(nu)
 
 print("Initial tree:\n \(root.description)\n\r")
 
-if let searchedTree = root.search(search: "l") {
+if let searchedTree = root.search("l") {
     print("Created tree:\n \(searchedTree.description)\n\r")
 }
 
