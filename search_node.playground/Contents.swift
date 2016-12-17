@@ -101,8 +101,6 @@ alpha.children.append(gamma)
 alpha.children.append(delta)
 alpha.children.append(epsilon)
 
-beta.children.append(dzeta)
-
 gamma.children.append(etha)
 
 delta.children.append(tetha)
@@ -110,13 +108,15 @@ delta.children.append(tetha)
 epsilon.children.append(yota)
 epsilon.children.append(cappa)
 
+beta.children.append(dzeta)
+
 dzeta.children.append(lambda)
 dzeta.children.append(mu)
 dzeta.children.append(nu)
 
 print("Initial tree:\n \(root.description)\n\r")
 
-if let searchedTree = root.search("l") {
+if let searchedTree = root.search("o") {
     print("Created tree:\n \(searchedTree.description)\n\r")
 }
 
