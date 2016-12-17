@@ -29,25 +29,12 @@ class Node {
         if self.name.localizedCaseInsensitiveContains(s) {
             let traversedChildren = self.children.map{ $0.search(s) ?? $0 }
             node.matched = true
-            
-            //let exp = traversedChildren.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
-            
             node.expanded = traversedChildren.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
-            
-            /*for children in traversedChildren {
-                if children.matched || children.expanded {
-                    node.expanded = true
-                    break
-                }
-            }*/
-            
             node.children = traversedChildren
             return node
         } else {
             let traversedChildren = self.children.map{ $0.search(s) }.filter{ $0 != nil }
-            if traversedChildren.count == 0 {
-                return nil
-            }
+            guard traversedChildren.count != 0 else { return nil }
             node.expanded = true
             node.children = traversedChildren as! [Node]
             return node
