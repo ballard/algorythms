@@ -12,8 +12,7 @@ class Node {
     // If this field is true, it means that node matches current search and it is emphasized
     var matched = false
     // Children of the node
-    var children: [Node] = []
-    
+    var children = NSMutableArray()
     /**
      * This function returns new subtree of the original tree which satisfies the following requirements:
      *   - Function doesn't modify original tree
@@ -22,19 +21,36 @@ class Node {
      *   - If Node matches the search, its matched property must be set to true, otherwise false
      *   - If at least one descendant of the Node matches the search, Node's expanded property must be set to true, otherwise false
      */
-    
     func search(_ s: String) -> Node? {
         if self.name.localizedCaseInsensitiveContains(s) {
             let node = Node()
             node.name = self.name
-            node.children = self.children.map{ $0.search(s) ?? $0 }
+            for element in self.children {
+                let nodeChild = element as! Node
+                if let findedNode = nodeChild.search(s) {
+                    node.children.add(findedNode)
+                } else {
+                    node.children.add(nodeChild)
+                }
+            }
             node.matched = true
-            node.expanded = node.children.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
+            for element in node.children {
+                let nodeChild = element as! Node
+                if nodeChild.expanded || nodeChild.matched {
+                    node.expanded = true
+                    break
+                }
+            }
             return node
         } else {
             let node = Node()
             node.name = self.name
-            node.children = self.children.map{ $0.search(s) }.filter{ $0 != nil } as! [Node]
+            for element in self.children {
+                let nodeChild = element as! Node
+                if let findedNode = nodeChild.search(s) {
+                    node.children.add(findedNode)
+                }
+            }
             guard node.children.count != 0 else { return nil }
             node.expanded = true
             return node
@@ -45,8 +61,11 @@ class Node {
 extension Node: CustomStringConvertible {
     var description: String {
         var s = "\(name) (m: \(matched), e: \(expanded))"
-        if !children.isEmpty {
-            s += " {" + children.map { $0.description }.joined(separator: ", ") + "}"
+        if children.count != 0 {
+            for element in children {
+                let node = element as! Node
+                s += " {" + node.description + "}"
+            }
         }
         return s
     }
@@ -94,29 +113,29 @@ mu.name = "mu"
 let nu = Node()
 nu.name = "nu"
 
-root.children.append(alpha)
-root.children.append(beta)
+root.children.add(alpha)
+root.children.add(beta)
 
-alpha.children.append(gamma)
-alpha.children.append(delta)
-alpha.children.append(epsilon)
+alpha.children.add(gamma)
+alpha.children.add(delta)
+alpha.children.add(epsilon)
 
-gamma.children.append(etha)
+gamma.children.add(etha)
 
-delta.children.append(tetha)
+delta.children.add(tetha)
 
-epsilon.children.append(yota)
-epsilon.children.append(cappa)
+epsilon.children.add(yota)
+epsilon.children.add(cappa)
 
-beta.children.append(dzeta)
+beta.children.add(dzeta)
 
-dzeta.children.append(lambda)
-dzeta.children.append(mu)
-dzeta.children.append(nu)
+dzeta.children.add(lambda)
+dzeta.children.add(mu)
+dzeta.children.add(nu)
 
 print("Initial tree:\n \(root.description)\n\r")
 
-if let searchedTree = root.search("o") {
+if let searchedTree = root.search("l") {
     print("Created tree:\n \(searchedTree.description)\n\r")
 }
 
