@@ -24,19 +24,19 @@ class Node {
      */
     
     func search(_ s: String) -> Node? {
-        let node = Node()
-        node.name = self.name
         if self.name.localizedCaseInsensitiveContains(s) {
-            let traversedChildren = self.children.map{ $0.search(s) ?? $0 }
+            let node = Node()
+            node.name = self.name
+            node.children = self.children.map{ $0.search(s) ?? $0 }
             node.matched = true
-            node.expanded = traversedChildren.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
-            node.children = traversedChildren
+            node.expanded = node.children.map{$0}.filter{ $0.expanded || $0.matched }.count != 0
             return node
         } else {
-            let traversedChildren = self.children.map{ $0.search(s) }.filter{ $0 != nil }
-            guard traversedChildren.count != 0 else { return nil }
+            let node = Node()
+            node.name = self.name
+            node.children = self.children.map{ $0.search(s) }.filter{ $0 != nil } as! [Node]
+            guard node.children.count != 0 else { return nil }
             node.expanded = true
-            node.children = traversedChildren as! [Node]
             return node
         }
     }
